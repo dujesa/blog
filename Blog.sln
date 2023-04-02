@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Helpers", "Helpers", "{2041A9E8-A073-4E49-AEA8-472477BC68E1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CrudBlog", "CrudBlog", "{BD103F11-018D-461C-8B5C-3F3F1CD332BC}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.Api", "Blog.Api\Blog.Api.csproj", "{1BB94891-5CB0-40DC-949B-537D7A7C5D68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.Application", "Blog.Application\Blog.Application.csproj", "{0C1EE7D4-659E-4FB4-AD8B-E734D5F461AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blog.Contracts", "Blog.Contracts\Blog.Contracts.csproj", "{1347DC4E-18DC-4F09-B34B-1465C94443C8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1BB94891-5CB0-40DC-949B-537D7A7C5D68} = {BD103F11-018D-461C-8B5C-3F3F1CD332BC}
+		{0C1EE7D4-659E-4FB4-AD8B-E734D5F461AE} = {BD103F11-018D-461C-8B5C-3F3F1CD332BC}
+		{1347DC4E-18DC-4F09-B34B-1465C94443C8} = {BD103F11-018D-461C-8B5C-3F3F1CD332BC}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1BB94891-5CB0-40DC-949B-537D7A7C5D68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BB94891-5CB0-40DC-949B-537D7A7C5D68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BB94891-5CB0-40DC-949B-537D7A7C5D68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BB94891-5CB0-40DC-949B-537D7A7C5D68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C1EE7D4-659E-4FB4-AD8B-E734D5F461AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C1EE7D4-659E-4FB4-AD8B-E734D5F461AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C1EE7D4-659E-4FB4-AD8B-E734D5F461AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C1EE7D4-659E-4FB4-AD8B-E734D5F461AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1347DC4E-18DC-4F09-B34B-1465C94443C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1347DC4E-18DC-4F09-B34B-1465C94443C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1347DC4E-18DC-4F09-B34B-1465C94443C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1347DC4E-18DC-4F09-B34B-1465C94443C8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
