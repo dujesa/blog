@@ -1,6 +1,7 @@
 using Blog.Application.Database;
 using Blog.Application.Repositories;
 using Blog.Application.Services;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Blog.Application;
@@ -11,6 +12,7 @@ public static class ApplicationServiceCollectionExtensions
     {
         services.AddSingleton<IPostRepository, PostRepository>();
         services.AddSingleton<IPostService, PostService>();
+        services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
      
         return services;
     }

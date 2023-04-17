@@ -5,8 +5,8 @@ services:
     image: postgres:latest
     restart: always
     environment:
-      POSTGRES_USER: dumpovac
-      POSTGRES_PASSWORD: changeme
-      POSTGRES_BD: postgres
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
     ports:
-      - "5432:5432"
+      - 5432:5432
