@@ -41,14 +41,20 @@ public class PostRepository : IPostRepository
         return result > 0;
     }
 
-    public async Task<Post?> GetByIdAsync(Guid id, CancellationToken token = default)
+    public async Task<Post?> GetByIdAsync(Guid id, Guid? userId = default, CancellationToken token = default)
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 
         var post = await connection.QuerySingleOrDefaultAsync<Post>(
             new CommandDefinition(@"
-                select * from posts where id = @id
-            ", new { id }, cancellationToken: token));
+                select p.*, round(avg(r.rating), 1) as rating, myr.rating as userrating
+                from posts p
+                left join ratings r on p.id = r.postid
+                left join ratings myr on p.id = myr.postid
+                    and myr.userid = @userId
+                where id = @id
+                group by id, userrating
+            ", new { id, userId }, cancellationToken: token));
 
         if (post is null)
         {
@@ -68,14 +74,20 @@ public class PostRepository : IPostRepository
         return post;
     }
 
-    public async Task<Post?> GetBySlugAsync(string slug, CancellationToken token = default)
+    public async Task<Post?> GetBySlugAsync(string slug, Guid? userId = default, CancellationToken token = default)
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 
         var post = await connection.QuerySingleOrDefaultAsync<Post>(
             new CommandDefinition(@"
-                select * from posts where slug = @slug
-            ", new { slug }, cancellationToken: token));
+                select p.*, round(avg(r.rating), 1) as rating, myr.rating as userrating
+                from posts p
+                left join ratings r on p.id = r.postid
+                left join ratings myr on p.id = myr.postid
+                    and myr.userid = @userId
+                where slug = @slug
+                group by id, userrating
+            ", new { slug, userId }, cancellationToken: token));
 
         if (post is null)
         {
@@ -95,25 +107,51 @@ public class PostRepository : IPostRepository
         return post;
     }
 
-    public async Task<IEnumerable<Post>> GetAllAsync(CancellationToken token = default)
+    public async Task<IEnumerable<Post>> GetAllAsync(GetAllPostsOptions options, CancellationToken token = default)
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
-        var result = await connection.QueryAsync(new CommandDefinition(@"
-            select p.*, string_agg(c.name, ',') as categories
-            from posts p left join categories c on p.id = c.postId
-            group by id
-        ", cancellationToken: token));
+
+        var orderClause = string.Empty;
+        if (options.SortField is not null)
+        {
+            orderClause = $"""
+                , p.{options.SortField}
+                order by p.{options.SortField} {(options.SortOrder == SortOrder.Ascending ? "asc" : "desc")}
+            """;
+        }
+        
+        var result = await connection.QueryAsync(new CommandDefinition($"""
+            select p.*,
+                   string_agg(distinct c.name, ',') as categories,
+                   round(avg(r.rating), 1) as rating,
+                   myr.rating as userrating
+            from posts p 
+            left join categories c on p.id = c.postId
+            left join ratings r on p.id = r.postid
+            left join ratings myr on p.id = myr.postid
+                and myr.userid = @userId
+            where (@title is null or p.title like ('%' || @title || '%'))
+            and (@yearofpublish is null or extract(year from p.createdat) = @yearofpublish)
+            group by id, userrating {orderClause}
+        """,  new
+        {
+            userId = options.UserId,
+            title = options.Title,
+            yearofpublish = options.YearOfPublish,
+        }, cancellationToken: token));
 
         return result.Select(x => new Post
         {
             Id = x.id,
             Title = x.title,
             CreatedAt = x.createdat,
+            Rating = x.rating as float?,
+            UserRating = x.userrating as int?,
             Categories = Enumerable.ToList(x.categories.Split(','))
         });
     }
 
-    public async Task<bool> UpdateAsync(Post post, CancellationToken token = default)
+    public async Task<bool> UpdateAsync(Post post, Guid? userId = default, CancellationToken token = default)
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
         using var transaction = connection.BeginTransaction();

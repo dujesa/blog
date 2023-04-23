@@ -9,6 +9,10 @@ public class Post
     public string Title { get; set; }
     
     public string Slug => GenerateSlug();
+
+    public float? Rating { get; set; }
+    
+    public int? UserRating { get; set; }
     
     public DateTime CreatedAt { get; set; }
     

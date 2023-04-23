@@ -33,9 +33,11 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> Get([FromRoute] string idOrSlug,
         CancellationToken token)
     {
+        var userId = HttpContext.GetUserId();
+        
         var post = Guid.TryParse(idOrSlug, out var id)
-            ? await _postService.GetByIdAsync(id, token)
-            : await _postService.GetBySlugAsync(idOrSlug, token);
+            ? await _postService.GetByIdAsync(id, userId, token)
+            : await _postService.GetBySlugAsync(idOrSlug, userId, token);
 
         if (post is null)
         {
@@ -47,9 +49,14 @@ public class PostsController : ControllerBase
     }
 
     [HttpGet(ApiEndpoints.Posts.GetAll)]
-    public async Task<IActionResult> GetAll(CancellationToken token)
+    public async Task<IActionResult> GetAll(
+        [FromQuery] GetAllPostsRequest request, CancellationToken token)
     {
-        var posts = await _postService.GetAllAsync(token);
+        var userId = HttpContext.GetUserId();
+        var options = request.MapToOptions()
+            .WithUser(userId);
+        
+        var posts = await _postService.GetAllAsync(options, token);
 
         var response = posts.MapToResponse();
         return Ok(response);
@@ -61,8 +68,9 @@ public class PostsController : ControllerBase
         [FromBody] UpdatePostRequest request, CancellationToken token)
     {
         var post = request.MapToPost(id);
-
-        var updatedPost = await _postService.UpdateAsync(post, token);
+        var userId = HttpContext.GetUserId();
+        
+        var updatedPost = await _postService.UpdateAsync(post, userId, token);
         if (updatedPost is null)
         {
             return NotFound();

@@ -31,7 +31,7 @@ public class PostValidator : AbstractValidator<Post>
 
     private async Task<bool> ValidateSlug(Post post, string slug, CancellationToken token)
     {
-        var existingPost = await _postRepository.GetBySlugAsync(slug);
+        var existingPost = await _postRepository.GetBySlugAsync(slug, token: token);
 
         if (existingPost is null)
             return true;
