@@ -35,6 +35,8 @@ public static class ContractMapping
             Id = post.Id,
             Title = post.Title,
             Slug = post.Slug,
+            Rating = post.Rating,
+            UserRating = post.UserRating,
             Categories = post.Categories,
             CreatedAt = post.CreatedAt
         };
@@ -46,5 +48,35 @@ public static class ContractMapping
         {
             Posts = posts.Select(MapToResponse)
         };
+    }
+    
+    public static IEnumerable<PostRatingResponse> MapToResponse(this IEnumerable<PostRating> ratings)
+    {
+        return ratings.Select(x => new PostRatingResponse
+        {
+            Rating = x.Rating,
+            Slug = x.Slug,
+            PostId = x.PostId,
+        });
+    }
+
+    public static GetAllPostsOptions MapToOptions(this GetAllPostsRequest request)
+    {
+        return new GetAllPostsOptions
+        {
+            Title = request.Title,
+            YearOfPublish = request.Year,
+            SortField = request.SortBy?.Trim('+', '-'),
+            SortOrder = request.SortBy is null ? SortOrder.Unsorted :
+                request.SortBy.StartsWith('-') ? SortOrder.Descending : SortOrder.Ascending
+        };
+    }
+
+    public static GetAllPostsOptions WithUser(this GetAllPostsOptions options,
+        Guid? userId)
+    {
+        options.UserId = userId;
+
+        return options;
     }
 }

@@ -33,6 +33,15 @@ public class DbInitializer
             create table if not exists categories (
             postId UUID references posts (Id),
             name TEXT not null);
-        ");    
+        ");
+
+        await connection.ExecuteAsync(@"
+            create table if not exists ratings (
+                userid uuid,
+                postid uuid references posts (id),
+                rating integer not null,
+                primary key (userid, postid)
+            );
+        ");
     }
 }
